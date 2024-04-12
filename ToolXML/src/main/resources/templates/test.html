@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #canvas {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            border: 1px solid #000;
+            margin-bottom: 20px;
+        }
+
+        #fixed-shape {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+
+        .shape {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: green;
+            border-radius: 50%;
+        }
+
+        .connection-line {
+            position: absolute;
+            background-color: blue;
+            width: 2px;
+        }
+    </style>
+</head>
+<body>
+<div id="canvas"></div>
+<div>
+    <input type="checkbox" id="circleCheckbox" />
+    <label for="circleCheckbox">Circle</label>
+    <input type="checkbox" id="squareCheckbox" />
+    <label for="squareCheckbox">Square</label>
+    <button onclick="generateShapes()">Generate</button>
+</div>
+
+<script>
+    function generateShapes() {
+        var canvas = document.getElementById('canvas');
+        canvas.innerHTML = ''; // 清空画布
+
+        var fixedShape = document.createElement('div');
+        fixedShape.id = 'fixed-shape';
+        canvas.appendChild(fixedShape); // 添加固定图形
+
+        var circleCheckbox = document.getElementById('circleCheckbox');
+        var squareCheckbox = document.getElementById('squareCheckbox');
+
+        if (circleCheckbox.checked) {
+            var circle = createShape('circle');
+            canvas.appendChild(circle);
+            createConnectionLine(circle, fixedShape);
+        }
+
+        if (squareCheckbox.checked) {
+            var square = createShape('square');
+            canvas.appendChild(square);
+            createConnectionLine(square, fixedShape);
+        }
+    }
+
+    function createShape(type) {
+        var shape = document.createElement('div');
+        shape.className = 'shape';
+
+        if (type === 'circle') {
+            shape.style.backgroundColor = 'green';
+        } else if (type === 'square') {
+            shape.style.backgroundColor = 'yellow';
+        }
+
+        return shape;
+    }
+
+    function createConnectionLine(shape, fixedShape) {
+        var canvas = document.getElementById('canvas');
+        var connectionLine = document.createElement('div');
+        connectionLine.className = 'connection-line';
+
+        var shapeRect = shape.getBoundingClientRect();
+        var fixedShapeRect = fixedShape.getBoundingClientRect();
+
+        var shapeCenterX = shapeRect.left + shapeRect.width / 2;
+        var shapeCenterY = shapeRect.top + shapeRect.height / 2;
+        var fixedShapeCenterX = fixedShapeRect.left + fixedShapeRect.width / 2;
+        var fixedShapeCenterY = fixedShapeRect.top + fixedShapeRect.height / 2;
+
+        var angle = Math.atan2(shapeCenterY - fixedShapeCenterY, shapeCenterX - fixedShapeCenterX);
+        var distance = Math.sqrt(Math.pow(shapeCenterX - fixedShapeCenterX, 2) + Math.pow(shapeCenterY - fixedShapeCenterY, 2));
+        var lineWidth = distance - shapeRect.width / 2 - fixedShapeRect.width / 2;
+
+        connectionLine.style.top = (fixedShapeCenterY + fixedShapeRect.height / 2) + 'px';
+        connectionLine.style.left = (fixedShapeCenterX + fixedShapeRect.width / 2) + 'px';
+        connectionLine.style.transform = `rotate(${toDegrees(angle)}deg)`;
+        connectionLine.style.height = lineWidth + 'px';
+
+        canvas.appendChild(connectionLine);
+    }
+
+    function toDegrees(radians) {
+        return radians * (180 / Math.PI);
+    }
+</script>
+</body>
+</html>

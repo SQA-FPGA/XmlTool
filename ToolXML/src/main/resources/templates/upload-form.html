@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            padding: 60px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: fade-in 1s ease-in-out;
+        }
+
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 30px; /* 增大标题的字体大小 */
+            margin-bottom: 30px; /* 调整标题的下边距 */
+            text-align: center;
+            color: #000000;
+        }
+
+        h2 {
+            font-size: 24px; /* 增大副标题的字体大小 */
+            margin-bottom: 20px; /* 调整副标题的下边距 */
+            color: #000000;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            text-decoration: none;
+            color: #0366d6;
+            text-align: center;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-form input[type="file"] {
+            display: none;
+        }
+
+        .upload-form label {
+            margin-top: 20px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0366d6;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-form label:hover {
+            background-color: #034785;
+        }
+
+        .upload-form button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #0366d6;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .upload-form button:hover {
+            background-color: #034785;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            text-align: center;
+            color: #0366d6;
+        }
+
+        .custom-file-input {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .custom-file-input input[type="file"] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+
+        .custom-file-input .file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0px 5px;
+        }
+
+        /* 弹出框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .modal-message {
+            padding: 20px;
+            background-color: #0366d6;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>串口协议自动生成测试用例软件</h1>
+    <h2>串口协议XML模板下载</h2>
+    <a class="download-link" href="http://localhost:8080/downLoad" download="template.xml">下载 XML 模板</a>
+    <h2>上传并解析 XML 文件</h2>
+    <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
+        <label for="file-upload" class="custom-file-input">
+            <span>选择文件</span>
+            <input id="file-upload" type="file" name="file" onchange="displayFileName(this)"/>
+        </label>
+        <div class="file-name" id="file-name-display"></div>
+        <button type="submit">上传并解析</button>
+    </form>
+
+<!--    <div class="file-name" id="file-name-display"></div>-->
+
+    <!-- 弹出框 -->
+    <div class="modal" id="loadingModal">
+        <div class="modal-content">
+            <div class="modal-message">文件解析中，请稍等...</div>
+        </div>
+    </div>
+
+    <script>
+        function handleFormSubmit(event) {
+            var uploadForm = event.target;
+            var uploadButton = uploadForm.querySelector('button[type="submit"]');
+            var modal = document.getElementById('loadingModal');
+
+            // 显示弹出框
+            modal.style.display = 'block';
+            uploadButton.disabled = true; // 禁用上传按钮
+
+            // 延迟 3 秒后恢复上传按钮和关闭弹出框
+            setTimeout(function() {
+                modal.style.display = 'none';
+                uploadButton.disabled = false;
+            }, 6000);
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            var fileUpload = document.getElementById('file-upload');
+            var fileNameDisplay = document.getElementById('file-name-display');
+
+            fileUpload.addEventListener('change', function() {
+                var fileName = fileUpload.files[0].name;
+                fileNameDisplay.innerText = '已选择文件：' + fileName;
+            });
+        });
+        function displayFileName(input) {
+            var fileNameDisplay = document.getElementById('file-name-display');
+            var fileName = input.files[0].name;
+            fileNameDisplay.innerText = '已选择文件：' + fileName;
+        }
+    </script>
+</div>
+</body>
+</html>

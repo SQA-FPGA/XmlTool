@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用例列表</title>
+    <meta charset="UTF-8">
+    <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        color: #0366d6;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+        text-align: left;
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        color: #0366d6;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #0366d6;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background-color: #034785;
+    }
+
+    input[type="text"] {
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        transition: border-color 0.3s ease;
+        overflow: auto;
+        resize: vertical;
+    }
+
+    input[type="text"]:focus:not(.readonly) {
+        outline: none;
+        border-color: #0366d6;
+        box-shadow: 0 0 0 2px rgba(3, 102, 214, 0.2);
+    }
+
+    .readonly {
+        background-color: #f2f2f2;
+        cursor: not-allowed;
+    }
+
+    .checkbox-column {
+        width: 40px;
+    }
+
+    .checkbox-column input[type="checkbox"] {
+        margin: 0;
+    }
+
+    /* 弹出框样式 */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .modal-message {
+        padding: 20px;
+        background-color: #0366d6;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 18px;
+        text-align: center;
+    }
+</style>
+
+</head>
+<body>
+<button type="button" onclick="goToHomePage()">返回主页面</button>
+
+<h1>用例列表</h1>
+<button type="button" onclick="exportToExcel()">全部导出为Excel</button>
+<button type="button" onclick="exportSelectedToSV()">批量生成SV文件</button>
+<button type="submit" onclick="handleSubmit(event)">执行测试用例</button>
+<table id="frame_table">
+    <tr>
+        <th class="checkbox-column">
+            <input type="checkbox" id="select-all-checkbox" onclick="selectAllCases()">
+        </th>
+        <th>序号</th>
+        <th>用例名称</th>
+        <th>用例标识</th>
+        <th>用例描述</th>
+        <th>sv文件名称</th>
+        <th>操作</th> <!-- 添加一个列用于显示操作按钮 -->
+    </tr>
+    <tr th:each="testcase : ${caseList}">
+        <td class="checkbox-column">
+            <input type="checkbox" class="case-checkbox" th:value="${testcase.id}">
+        </td>
+        <td th:text="${testcase.id}"></td>
+        <td th:text="${testcase.caseName}"></td>
+<!--        <td>-->
+<!--            <input type="text" th:value="${testcase.caseName}" id="caseName-input-[[${testcase.id}]]" readonly onclick="toggleEditMode(this)"/>-->
+<!--        </td>-->
+        <td th:text="${testcase.caseSign}"></td>
+<!--        <td>-->
+<!--            <input type="text" th:value="${testcase.caseSign}" id="caseSign-input-[[${testcase.id}]]" readonly onclick="toggleEditMode(this)"/>-->
+<!--        </td>-->
+        <td th:text="${testcase.caseDescription}"></td>
+<!--        <td>-->
+<!--            <input type="text" th:value="${testcase.caseDescription}" id="caseDescription-input-[[${testcase.id}]]" readonly onclick="toggleEditMode(this)"/>-->
+<!--        </td>-->
+        <td th:text="${testcase.fileName}"></td>
+<!--        <td>-->
+<!--            <input type="text" th:value="${testcase.fileName}" id="fileName-input-[[${testcase.id}]]" readonly onclick="toggleEditMode(this)"/>-->
+<!--        </td>-->
+        <td>
+<!--            <button type="button" th:onclick="'saveCase(' + ${testcase.id} + ')'" >保存</button>-->
+            <button type="button" th:onclick="'exportToSV(' + ${testcase.id} + ')'" >生成sv文件</button>
+        </td>
+    </tr>
+</table>
+<!-- 弹出框 -->
+<div class="modal" id="loadingModal1">
+    <div class="modal-content">
+        <div class="modal-message">正在执行测试用例，请稍等...</div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    function handleSubmit(event) {
+        var modal = document.getElementById('loadingModal1');
+
+        // 显示弹出框
+        modal.style.display = 'block';
+
+        // 延迟 3 秒后恢复上传按钮和关闭弹出框
+        setTimeout(function() {
+            modal.style.display = 'none';
+            window.location.href = 'https://www.baidu.com';
+        }, 6000);
+    }
+
+    function selectAllCases() {
+        var selectAllCheckbox = document.getElementById('select-all-checkbox');
+        var checkboxes = document.getElementsByClassName('case-checkbox');
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = selectAllCheckbox.checked;
+        }
+    }
+
+    // 批量调用
+    function exportSelectedToSV() {
+        var selectedIds = [];
+        var checkboxes = document.getElementsByClassName('case-checkbox');
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                selectedIds.push(checkboxes[i].value);
+            }
+        }
+
+        if (selectedIds.length === 0) {
+            alert('请至少选择一个用例');
+            return;
+        }
+
+        var index = 0;
+        exportNextToSV(selectedIds, index);
+    }
+
+    function exportNextToSV(selectedIds, index) {
+        if (index >= selectedIds.length) {
+            return;
+        }
+
+        var testcaseId = selectedIds[index];
+
+        fetch('/exportSVfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                caseId: testcaseId,
+                caseList: caseList,
+                frameList: frameList
+            })
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = caseList.at(testcaseId - 1).fileName + ".sv";
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                // 导出下一个用例
+                exportNextToSV(selectedIds, index + 1);
+            });
+    }
+
+    function toggleEditMode(input) {
+        if (input.hasAttribute('readonly')) {
+            input.removeAttribute('readonly');
+            input.classList.add('readonly');
+        } else {
+            input.setAttribute('readonly', 'readonly');
+            input.classList.remove('readonly');
+        }
+    }
+
+    var caseList = [[${caseList}]];
+    var frameList = [[${frameList}]];
+
+
+    function saveCase(id) {
+        // 保存并刷新页面
+        // 获取相应输入框的值
+        var caseName = document.getElementById('caseName-input-' + id).value;
+        var caseSign = document.getElementById('caseSign-input-' + id).value;
+        var caseDescription = document.getElementById('caseDescription-input-' + id).value;
+        var fileName = document.getElementById('fileName-input-' + id).value;
+
+        // 发送到服务器保存数据的逻辑可以在这里添加
+
+        // 刷新页面
+        location.reload();
+        // 发送到服务器保存数据的逻辑可以在这里添加
+
+        location.reload();
+    }
+    function exportToExcel() {
+        fetch('/exportExcel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(caseList)
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'case_list.xlsx';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+    }
+    function exportToSV(id) {
+        fetch('/exportSVfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                caseId : id,
+                caseList : caseList,
+                frameList : frameList
+            })
+        })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = caseList.at(id - 1).fileName + ".sv";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            });
+    }
+
+    function goToHomePage() {
+        // 通过 JavaScript 实现返回主页面的逻辑
+        window.location.href = "http://localhost:8080/form"; // 替换 "/home" 为你的主页面 URL
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>图形选择器</title>
+  <style>
+    #container {
+      display: flex;
+    }
+
+    #menu {
+      width: 200px;
+      padding: 10px;
+      background-color: #f0f0f0;
+    }
+
+    #canvas {
+      flex: 1;
+      position: relative;
+      padding: 10px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+    }
+
+    #fixed-shape {
+      position: absolute;
+      top: calc(50% - 35px);
+      left: calc(50% - 120px);
+      width: 550px;
+      height: 300px;
+      background-color: yellow;
+    }
+
+    .shape {
+      margin-bottom: 10px;
+      padding: 5px;
+      background-color: #e0e0e0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div id="container">
+  <div id="menu">
+    <h3>请选择协议</h3>
+    <div class="shape" onclick="addShape('uart')">串口</div>
+    <div class="shape" onclick="addShape('IIC')">IIC</div>
+    <div class="shape" onclick="addShape('Flash')">Flash</div>
+  </div>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <div id="fixed-shape"></div>
+</div>
+<script>
+  function addShape(shapeType) {
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+
+    var shapeX, shapeY;
+
+    if (shapeType === 'uart') {
+      shapeX = 150;
+      shapeY = 20;
+
+      // ctx.beginPath();
+      // ctx.arc(shapeX, shapeY, 10, 0, 2 * Math.PI);
+      // ctx.fillStyle = 'red';
+      // ctx.fill();
+      // ctx.closePath();
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(shapeX, shapeY, 20, 15);
+
+      // 跳转到串口页面
+      canvas.addEventListener('click', function() {
+        window.location.href = 'http://localhost:8080/form';
+      });
+    } else if (shapeType === 'IIC') {
+      shapeX = 210;
+      shapeY = 20;
+
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(shapeX, shapeY, 20, 15);
+    } else if (shapeType === 'Flash') {
+      shapeX = 270;
+      shapeY = 20;
+
+      // ctx.beginPath();
+      // ctx.moveTo(shapeX, shapeY);
+      // ctx.lineTo(shapeX - 5, shapeY + 10);
+      // ctx.lineTo(shapeX + 5, shapeY + 10);
+      // ctx.closePath();
+      // ctx.fillStyle = 'green';
+      // ctx.fill();
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(shapeX, shapeY, 20, 15);
+    }
+    ctx.font = '8px Verdana';
+    ctx.fillStyle = 'black';
+    ctx.fillText(shapeType, shapeX, shapeY + 8);
+
+    var startX = shapeX + 7;
+    var startY = shapeY + 15;
+    var endX = shapeX;
+    var endY = shapeY + 80;
+
+    // 计算箭头的角度和长度
+    var angle = Math.atan2(endY - startY, endX - startX);
+    var arrowLength = 10;
+
+    // 绘制直线
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+
+    // 绘制起点箭头
+    ctx.beginPath();
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(startX + arrowLength * Math.cos(angle - Math.PI / 6), startY + arrowLength * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(startX + arrowLength * Math.cos(angle + Math.PI / 6), startY + arrowLength * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = 'black';
+    ctx.fill();
+
+    // 绘制终点箭头
+    ctx.beginPath();
+    ctx.moveTo(endX, endY);
+    ctx.lineTo(endX - arrowLength * Math.cos(angle - Math.PI / 6), endY - arrowLength * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(endX - arrowLength * Math.cos(angle + Math.PI / 6), endY - arrowLength * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = 'black';
+    ctx.fill();
+  }
+</script>
+</body>
+</html>

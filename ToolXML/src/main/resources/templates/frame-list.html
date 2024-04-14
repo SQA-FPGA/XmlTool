@@ -52,6 +52,11 @@
         font-weight: bold;
     }
 
+    button:disabled {
+        background-color: #999;
+        cursor: not-allowed;
+    }
+
     button:hover {
         background-color: #034785;
     }
@@ -137,7 +142,7 @@
     </tr>
     <tr th:each="testcase : ${caseList}">
         <td class="checkbox-column">
-            <input type="checkbox" class="case-checkbox" th:value="${testcase.id}">
+            <input type="checkbox" class="case-checkbox" th:value="${testcase.id}" onclick="updateExecuteButtonStatus()">
         </td>
         <td th:text="${testcase.id}"></td>
         <td th:text="${testcase.caseName}"></td>
@@ -170,6 +175,25 @@
 </div>
 
 <script th:inline="javascript">
+
+    window.addEventListener('DOMContentLoaded', function() {
+        updateExecuteButtonStatus();
+    });
+
+    function updateExecuteButtonStatus() {
+        var checkboxes = document.getElementsByClassName('case-checkbox');
+        var executeButton = document.querySelector('button[type="submit"]');
+
+        var isAnyCheckboxChecked = false;
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                isAnyCheckboxChecked = true;
+                break;
+            }
+        }
+
+        executeButton.disabled = !isAnyCheckboxChecked;
+    }
 
     function handleSubmit(event) {
         var modal = document.getElementById('loadingModal1');

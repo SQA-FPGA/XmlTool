@@ -10,26 +10,28 @@ import com.example.toolxml.mybatis.entity.TestCase;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -178,7 +180,7 @@ public class DataFrameController {
                 badCase.setCaseSign("testCase" + "-abnormal-" + ++abnormalIndex);
                 badCase.setCaseDescription("异常：" + dto.getNodeName() + "错误，" + "错误值为" + errorValue);
                 badCase.setFileName("tb_zk_ctrl_testcase_abnormal_" + abnormalIndex);
-                badCase.setFilePath("D:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
+                badCase.setFilePath("C:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
                 badCase.setIsRightCase(false);
 
 //                dataFrame.setId(caseId);
@@ -231,7 +233,7 @@ public class DataFrameController {
                 badCase.setCaseSign("testCase" + "-abnormal-" + ++abnormalIndex);
                 badCase.setCaseDescription("异常：" + dto.getNodeName() + "错误，无法识别数据，" + "错误值为" + errorValue);
                 badCase.setFileName("tb_zk_ctrl_testcase_abnormal_" + abnormalIndex);
-                badCase.setFilePath("D:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
+                badCase.setFilePath("C:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
                 badCase.setIsRightCase(false);
 
 //                dataFrame.setId(caseId);
@@ -294,7 +296,7 @@ public class DataFrameController {
                 badCaseMin.setCaseSign("testCase" + "-abnormal-" + ++abnormalIndex);
                 badCaseMin.setCaseDescription("异常：" + dto.getNodeName() + "错误，数据小于最小值，" + "错误值为" + errorValueMin);
                 badCaseMin.setFileName("tb_zk_ctrl_testcase_abnormal_" + abnormalIndex);
-                badCaseMin.setFilePath("D:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
+                badCaseMin.setFilePath("C:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
                 badCaseMin.setIsRightCase(false);
 
                 badCaseMax.setId(++caseId);
@@ -302,7 +304,7 @@ public class DataFrameController {
                 badCaseMax.setCaseSign("testCase" + "-abnormal-" + ++abnormalIndex);
                 badCaseMax.setCaseDescription("异常：" + dto.getNodeName() + "错误，数据大于最大值，" + "错误值为" + errorValueMax);
                 badCaseMax.setFileName("tb_zk_ctrl_testcase_abnormal_" + abnormalIndex);
-                badCaseMax.setFilePath("D:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
+                badCaseMax.setFilePath("C:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_abnormal_" + abnormalIndex + ".sv");
                 badCaseMax.setIsRightCase(false);
 
 //                for (String frameName : data.keySet()) {
@@ -386,7 +388,7 @@ public class DataFrameController {
                     goodCase.setCaseSign("testCase" + "-normal-" + ++abnormalIndex);
                     goodCase.setCaseDescription("正常：" + dataContentDTO.getRemark());
                     goodCase.setFileName("tb_zk_ctrl_testcase_normal_" + ++normalIndex);
-                    goodCase.setFilePath("D:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_normal_" + normalIndex + ".sv");
+                    goodCase.setFilePath("C:\\project\\uartTest\\testcase\\" + "tb_zk_ctrl_testcase_normal_" + normalIndex + ".sv");
                     goodCase.setIsRightCase(true);
                     dataFrame.setIsRightCase(true);
 
@@ -471,9 +473,79 @@ public class DataFrameController {
         }
     }
 
+    @GetMapping("/executeResult")
+    public String showExecuteResult() {
+        return "execute-results";
+    }
+
+    @GetMapping("/bfms")
+    public String showBFMS(Model model) throws IOException {
+        // 假设这里根据一些条件来决定使用哪张图片
+        // 创建ClassPathResource对象，指定资源路径
+        Resource resource = new ClassPathResource("templates/images/model.png");
+
+        // 获取资源的绝对路径
+        String imagePath = resource.getFile().getAbsolutePath();
+        model.addAttribute("imageSrc", imagePath);
+        return "select-protocol";
+    }
+
+//    @GetMapping(value = "/images/{imageName}", produces = MediaType.IMAGE_PNG_VALUE)
+//    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws Exception {
+//        System.out.println(imageName);
+//        byte[] imageContent ;
+//        String path = "C:\\workspace\\GitRepo\\XmlTool\\ToolXML\\src\\main\\resources\\templates\\images\\" + imageName;
+//        imageContent = fileToByte(new File(path));
+//
+//        final HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.IMAGE_PNG);
+//        return new ResponseEntity<>(imageContent, headers, HttpStatus.OK);
+//    }
+
+    @GetMapping(value = "/images/{imageName}", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> getImage(@PathVariable String imageName) throws IOException {
+        byte[] imageContent;
+
+        // 获取资源文件的路径
+        ClassPathResource resource = new ClassPathResource("templates/images/" + imageName);
+        File file = resource.getFile();
+
+        // 将文件内容读取为字节数组
+        try (InputStream inputStream = new FileInputStream(file)) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            imageContent = outputStream.toByteArray();
+        }
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<>(imageContent, headers, HttpStatus.OK);
+    }
+
+    public static byte[] fileToByte(File img) throws Exception {
+        byte[] bytes = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            BufferedImage bi;
+            bi = ImageIO.read(img);
+            ImageIO.write(bi, "png", baos);
+            bytes = baos.toByteArray();
+        } catch (Exception e) {
+            System.out.println(img.getAbsolutePath());
+            e.printStackTrace();
+        } finally {
+            baos.close();
+        }
+        return bytes;
+    }
+
     private static String generateTestCaseData(TestCase testCase) throws IOException {
 //        // 文件件路径
-//        String filePath = "D:\\workspace\\01code\\templeWork\\ToolXML\\ToolXML\\src\\main\\resources\\template\\tb_zk_ctrl_single.sv";
+//        String filePath = "C:\\workspace\\01code\\templeWork\\ToolXML\\ToolXML\\src\\main\\resources\\template\\tb_zk_ctrl_single.sv";
         // 变量-变量值
         LinkedHashMap<String, String> valueList = testCase.getValueList();
         // 获取资源文件路径
@@ -487,7 +559,7 @@ public class DataFrameController {
         }
         // 定义输出文件路径
         String fileName = testCase.getFileName();
-        String outputPath = "D:\\project\\uartTest\\testcase\\" + fileName.toLowerCase(Locale.ROOT) + ".sv";
+        String outputPath = "C:\\project\\uartTest\\testcase\\" + fileName.toLowerCase(Locale.ROOT) + ".sv";
         // 创建文件对象
         File file = new File(outputPath);
         // 获取父目录

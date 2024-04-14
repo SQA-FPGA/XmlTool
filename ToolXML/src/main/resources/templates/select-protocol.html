@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>图形选择器</title>
+  <title>首页-协议选择</title>
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
     #container {
       display: flex;
     }
@@ -29,28 +35,77 @@
       width: 550px;
       height: 300px;
       background-color: yellow;
+      display: none;
     }
-
+    #model-image {
+      /* 其他样式 */
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
     .shape {
       margin-bottom: 10px;
       padding: 5px;
       background-color: #e0e0e0;
       cursor: pointer;
+      border-radius: 5px;
     }
+
+    button {
+      padding: 10px 20px;
+      background-color: #0366d6;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #034785;
+    }
+    #model-image {
+      display: none;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
   </style>
 </head>
 <body>
 <div id="container">
   <div id="menu">
-    <h3>请选择协议</h3>
-    <div class="shape" onclick="addShape('uart')">串口</div>
-    <div class="shape" onclick="addShape('IIC')">IIC</div>
-    <div class="shape" onclick="addShape('Flash')">Flash</div>
+    <h3>请选择BFMs</h3>
+    <div class="shape" onclick="addShape('spi')"><input type="checkbox" id="spi" />BFM_SPI</div>
+    <div class="shape" onclick="addShape('uart')"><input type="checkbox" id="uart" />BFM_UART</div>
+    <div class="shape" onclick="addShape('ad')"><input type="checkbox" id="ad" />BFM_AD</div>
+    <div class="shape" onclick="addShape('eeprom')"><input type="checkbox" id="eeprom" />BFM_EEPROM</div>
+    <div class="shape" onclick="addShape('1553B')"><input type="checkbox" id="1553B" />BFM_1553B</div>
+    <div class="shape" onclick="addShape('iic')"><input type="checkbox" id="iic" />BFM_I2C</div>
+    <button onclick="generateModelImage()">生成模型图</button>
   </div>
-  <canvas id="canvas" width="400" height="400"></canvas>
-  <div id="fixed-shape"></div>
+<!--  <canvas id="canvas" width="400" height="400"></canvas>-->
+<!--  <div id="fixed-shape"></div>-->
+  <img id="model-image1" width="800" height="600" src="/images/case1.png" alt="Model Image" onclick="window.location.href='http://localhost:8080/form'">
+  <img id="model-image" width="800" height="600" src="/images/case2.png" alt="Model Image" onclick="window.location.href='http://localhost:8080/form'">
 </div>
 <script>
+  function generateModelImage() {
+    // 切换图片显示状态
+    var modelImage = document.getElementById('model-image');
+    var modelImage1 = document.getElementById('model-image1');
+
+    if (modelImage.style.display === 'block') {
+      modelImage.style.display = 'none';
+      modelImage1.style.display = 'block';
+    } else {
+      modelImage.style.display = 'block';
+      modelImage1.style.display = 'none';
+    }
+  }
+
   function addShape(shapeType) {
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
@@ -61,11 +116,6 @@
       shapeX = 150;
       shapeY = 20;
 
-      // ctx.beginPath();
-      // ctx.arc(shapeX, shapeY, 10, 0, 2 * Math.PI);
-      // ctx.fillStyle = 'red';
-      // ctx.fill();
-      // ctx.closePath();
       ctx.fillStyle = 'blue';
       ctx.fillRect(shapeX, shapeY, 20, 15);
 
@@ -83,17 +133,10 @@
       shapeX = 270;
       shapeY = 20;
 
-      // ctx.beginPath();
-      // ctx.moveTo(shapeX, shapeY);
-      // ctx.lineTo(shapeX - 5, shapeY + 10);
-      // ctx.lineTo(shapeX + 5, shapeY + 10);
-      // ctx.closePath();
-      // ctx.fillStyle = 'green';
-      // ctx.fill();
       ctx.fillStyle = 'blue';
       ctx.fillRect(shapeX, shapeY, 20, 15);
     }
-    ctx.font = '8px Verdana';
+    ctx.font = '8px Times New Roman';
     ctx.fillStyle = 'black';
     ctx.fillText(shapeType, shapeX, shapeY + 8);
 
@@ -104,7 +147,7 @@
 
     // 计算箭头的角度和长度
     var angle = Math.atan2(endY - startY, endX - startX);
-    var arrowLength = 10;
+    var arrowLength = 5;
 
     // 绘制直线
     ctx.beginPath();
@@ -116,8 +159,8 @@
     // 绘制起点箭头
     ctx.beginPath();
     ctx.moveTo(startX, startY);
-    ctx.lineTo(startX + arrowLength * Math.cos(angle - Math.PI / 6), startY + arrowLength * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(startX + arrowLength * Math.cos(angle + Math.PI / 6), startY + arrowLength * Math.sin(angle + Math.PI / 6));
+    ctx.lineTo(startX + arrowLength * Math.cos(angle - Math.PI / 3), startY + arrowLength * Math.sin(angle - Math.PI / 3));
+    ctx.lineTo(startX + arrowLength * Math.cos(angle + Math.PI / 3), startY + arrowLength * Math.sin(angle + Math.PI / 3));
     ctx.closePath();
     ctx.fillStyle = 'black';
     ctx.fill();

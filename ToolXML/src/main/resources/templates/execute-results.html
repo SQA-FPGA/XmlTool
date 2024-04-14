@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #0366d6;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #0366d6;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0366d6;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #034785;
+        }
+
+        input[type="text"] {
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+            overflow: auto;
+            resize: vertical;
+        }
+    </style>
+    <title>测试用例执行覆盖率结果</title>
+</head>
+<body>
+<h1>覆盖率结果</h1>
+<table id="frame_table">
+    <tr>
+        <th>序号</th>
+        <th>文件名称</th>
+        <th>语句数量</th>
+        <th>语句命中数量</th>
+        <th>语句覆盖率</th>
+        <th>分支数量</th>
+        <th>分支命中数量</th>
+        <th>分支覆盖率</th>
+        <th>操作</th> <!-- 添加一个列用于显示操作按钮 -->
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>dut_tx.v</td>
+        <td>82</td>
+        <td>74</td>
+        <td>90.244%</td>
+        <td>65</td>
+        <td>52</td>
+        <td>82.540%</td>
+        <td>
+            <button type="button">导出</button>
+        </td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>dut_top.v</td>
+        <td>23</td>
+        <td>23</td>
+        <td>100.000%</td>
+        <td>15</td>
+        <td>14</td>
+        <td>93.333%</td>
+        <td>
+            <button type="button">导出</button>
+        </td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>dut_rx.v</td>
+        <td>96</td>
+        <td>86</td>
+        <td>89.583%</td>
+        <td>66</td>
+        <td>56</td>
+        <td>84.848%</td>
+        <td>
+            <button type="button">导出</button>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -88,8 +88,8 @@
   </div>
 <!--  <canvas id="canvas" width="400" height="400"></canvas>-->
 <!--  <div id="fixed-shape"></div>-->
-  <img id="model-image1" width="800" height="600" src="/images/case1.png" alt="Model Image" onclick="window.location.href='http://localhost:8080/form'">
-  <img id="model-image" width="800" height="600" src="/images/case2.png" alt="Model Image" onclick="window.location.href='http://localhost:8080/form'">
+  <img id="model-image1" width="800" height="600" src="/images/case1.png" alt="Model Image" onclick="window.location.href='http://localhost:8081/form'">
+  <img id="model-image" width="800" height="600" src="/images/case2.png" alt="Model Image" onclick="window.location.href='http://localhost:8081/form'">
 </div>
 <script>
   function generateModelImage() {
@@ -121,7 +121,7 @@
 
       // 跳转到串口页面
       canvas.addEventListener('click', function() {
-        window.location.href = 'http://localhost:8080/form';
+        window.location.href = 'http://localhost:8081/form';
       });
     } else if (shapeType === 'IIC') {
       shapeX = 210;
